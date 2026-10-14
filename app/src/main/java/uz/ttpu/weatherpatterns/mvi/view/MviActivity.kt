@@ -1,5 +1,6 @@
 package uz.ttpu.weatherpatterns.mvi.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -59,6 +60,12 @@ class MviActivity : ComponentActivity() {
                         errorMessage = state.error,
                         onFetchWeather = { city ->
                             viewModel.processIntent(WeatherIntent.LoadWeather(city))
+                        },
+                        onSwitchPattern = { targetActivityClass ->
+                            if (targetActivityClass != MviActivity::class.java) {
+                                startActivity(Intent(this@MviActivity, targetActivityClass))
+                                finish()
+                            }
                         }
                     )
                 }

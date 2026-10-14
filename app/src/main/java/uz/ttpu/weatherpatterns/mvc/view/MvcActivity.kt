@@ -1,5 +1,6 @@
 package uz.ttpu.weatherpatterns.mvc.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,7 +33,13 @@ class MvcActivity : ComponentActivity(), WeatherView {
                     isLoading = state is WeatherUiState.Loading,
                     weather = (state as? WeatherUiState.Success)?.weather,
                     errorMessage = (state as? WeatherUiState.Error)?.message,
-                    onFetchWeather = { city -> controller.fetchWeather(city) }
+                    onFetchWeather = { city -> controller.fetchWeather(city) },
+                    onSwitchPattern = { targetActivityClass ->
+                        if (targetActivityClass != MvcActivity::class.java) {
+                            startActivity(Intent(this@MvcActivity, targetActivityClass))
+                            finish()
+                        }
+                    }
                 )
             }
         }

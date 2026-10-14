@@ -11,6 +11,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uz.ttpu.weatherpatterns.data.model.Weather
+import uz.ttpu.weatherpatterns.mvc.view.MvcActivity
+import uz.ttpu.weatherpatterns.mvp.view.MvpActivity
+import uz.ttpu.weatherpatterns.mvvm.view.MvvmActivity
+import uz.ttpu.weatherpatterns.mvi.view.MviActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,7 +24,8 @@ fun WeatherScreen(
     weather: Weather?,
     errorMessage: String?,
     onFetchWeather: (String) -> Unit,
-    onBackClick: (() -> Unit)? = null
+    onBackClick: (() -> Unit)? = null,
+    onSwitchPattern: ((Class<*>) -> Unit)? = null
 ) {
     var selectedCity by remember { mutableStateOf("Tashkent") }
     val quickCities = listOf("Tashkent", "Samarkand", "Bukhara", "Atlantis")
@@ -32,8 +37,96 @@ fun WeatherScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                actions = {
+                    if (onSwitchPattern != null) {
+                        var menuExpanded by remember { mutableStateOf(false) }
+                        TextButton(
+                            onClick = { menuExpanded = true },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        ) {
+                            Text("Switch Pattern ▾", fontWeight = FontWeight.Bold)
+                        }
+                        DropdownMenu(
+                            expanded = menuExpanded,
+                            onDismissRequest = { menuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("1. MVC Pattern") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onSwitchPattern(MvcActivity::class.java)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("2. MVP Pattern") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onSwitchPattern(MvpActivity::class.java)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("3. MVVM Pattern") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onSwitchPattern(MvvmActivity::class.java)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("4. MVI Pattern") },
+                                onClick = {
+                                    menuExpanded = false
+                                    onSwitchPattern(MviActivity::class.java)
+                                }
+                            )
+                        }
+                    }
+                }
             )
+        },
+        bottomBar = {
+            if (onSwitchPattern != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    tonalElevation = 3.dp,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Switch Architecture Pattern:",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            AssistChip(
+                                onClick = { onSwitchPattern(MvcActivity::class.java) },
+                                label = { Text("MVC") }
+                            )
+                            AssistChip(
+                                onClick = { onSwitchPattern(MvpActivity::class.java) },
+                                label = { Text("MVP") }
+                            )
+                            AssistChip(
+                                onClick = { onSwitchPattern(MvvmActivity::class.java) },
+                                label = { Text("MVVM") }
+                            )
+                            AssistChip(
+                                onClick = { onSwitchPattern(MviActivity::class.java) },
+                                label = { Text("MVI") }
+                            )
+                        }
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         Column(
